@@ -1,0 +1,47 @@
+shader_type canvas_item;
+
+uniform sampler2D texture01 : hint_albedo;
+uniform sampler2D texture02 : hint_albedo;
+uniform sampler2D texture03 : hint_albedo;
+
+uniform float tag_position = 0.0;
+
+
+float bottle_mask(vec2 uv1, vec2 uv2){
+	
+	float wine_bottle_alpha = texture(texture01, uv1).a;
+	float tag_alpha = texture(texture02, uv2).a;
+	return clamp(wine_bottle_alpha - tag_alpha, 0.0, 1.0);
+	
+}
+
+float reflection_mask(vec2 uv1, vec2 uv2){
+	
+	float reflection_alpha = texture(texture03, uv1).a;
+	float tag_alpha = texture(texture02, uv2).a;
+	return abs(tag_alpha - reflection_alpha) * (reflection_alpha * 0.33);
+	
+}
+
+
+void fragment(){
+	
+	//UVs
+	float uvx = UV.x + tag_position;
+	float uvy = UV.y;
+	
+	//Masks 
+	float wine_bottle_mask = bottle_mask(UV, vec2(uvx, uvy));
+	float tag_mask = texture(texture02, vec2(uvx, uvy)).a;
+	float alpha = texture(texture01, UV).a;
+	
+	//Color
+	vec4 bottle = texture(texture01, UV) * wine_bottle_mask;
+	vec4 tag = texture(texture02, vec2(uvx, uvy)) * tag_mask;
+	vec4 reflection = texture(texture03, UV) * reflection_mask(UV, vec2(uvx, uvy));
+	vec4 compose = (bottle + tag + reflection) * alpha;
+	
+	
+	COLOR = compose;
+	
+}
