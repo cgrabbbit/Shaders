@@ -5,6 +5,8 @@ uniform sampler2D texture01 : hint_albedo;
 uniform sampler2D texture02 : hint_albedo;
 uniform sampler2D texture03 : hint_albedo;
 
+
+//uniform float pixel_round = 32.0; //Add this if you want to snap tag on pixels. This number is your number of X pixels. Look in fragmenet for implementation
 uniform float tag_position = 0.0;
 
 
@@ -28,6 +30,7 @@ float reflection_mask(vec2 uv1, vec2 uv2){
 void fragment(){
 	
 	//UVs
+	//float uvx = (UV.x + round(tag_position * pixel_round) / pixel_round); // use this for pixel snapping
 	float uvx = UV.x + tag_position;
 	float uvy = UV.y;
 	
